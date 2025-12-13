@@ -3,91 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AR Елка</title>
-
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <title>AR Debug</title>
 
   <style>
     body {
       margin: 0;
-      background: black;
-      font-family: sans-serif;
+      background: #000;
+      color: #0f0;
+      font-family: monospace;
+      padding: 16px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
-    .message {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-align: center;
-      padding: 24px;
-      font-size: 20px;
+    h1 {
+      color: #0ff;
+      font-size: 16px;
+      margin-bottom: 12px;
     }
 
-    model-viewer {
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      position: absolute;
-      pointer-events: none;
+    .block {
+      margin-bottom: 16px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 8px;
     }
   </style>
 </head>
 <body>
 
-  <div id="message" class="message" style="display:none;">
-    Пожалуйста, откройте страницу<br>
-    <strong>в Safari или Chrome</strong>
-  </div>
+<h1>AR DEBUG INFO</h1>
 
-  <!-- Только для Android -->
-  <model-viewer
-    id="androidAR"
-    src="lymtree.glb"
-    exposure="1"
-    shadow-intensity="1"
-    environment-image="sunny_vondelpark_1k.hdr"
-    shadow-softness="0.7"
-    camera-controls
-    auto-rotate
-    autoplay
-    ar
-    ar-modes="scene-viewer webxr"
-  ></model-viewer>
+<div id="info"></div>
 
-  <script>
-    const isTelegram = /Telegram|TG/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isAndroid = /Android/i.test(navigator.userAgent);
+<script>
+  const info = document.getElementById("info");
 
-    const message = document.getElementById("message");
+  function log(title, data) {
+    info.innerHTML += `\n=== ${title} ===\n`;
+    info.innerHTML += data + "\n";
+  }
 
-    if (isTelegram) {
-      // ❌ Telegram WebView — показываем предупреждение
-      message.style.display = "flex";
-    } else {
-      // ✅ Нормальный браузер — запускаем AR
-      window.addEventListener("load", () => {
-        if (isIOS) {
-          const link = document.createElement("a");
-          link.href = "lymtree.usdz";
-          link.rel = "ar";
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-        } 
-        else if (isAndroid) {
-          document.getElementById("androidAR").activateAR();
-        } 
-        else {
-          message.innerHTML = "Откройте страницу на мобильном устройстве";
-          message.style.display = "flex";
-        }
-      });
-    }
-  </script>
+  log("User Agent", navigator.userAgent);
+  log("Platform", navigator.platform);
+  log("Vendor", navigator.vendor);
+  log("Language", navigator.language);
+  log("Languages", JSON.stringify(navigator.languages));
+  log("Hardware Concurrency", navigator.hardwareConcurrency);
+  log("Device Memory", navigator.deviceMemory);
+  log("Secure Context", window.isSecureContext);
+  log("Location", location.href);
+
+  log("Touch Support", 'ontouchstart' in window);
+  log("Max Touch Points", navigator.maxTouchPoints);
+
+  log("WebXR Support", 'xr' in navigator);
+  log("MediaDevices", !!navigator.mediaDevices);
+
+  // Простые детекторы
+  log("isIOS", /iPhone|iPad|iPod/i.test(navigator.userAgent));
+  log("isAndroid", /Android/i.test(navigator.userAgent));
+  log("isTelegram", /Telegram|TG/i.test(navigator.userAgent));
+  log("isInstagram", /Instagram/i.test(navigator.userAgent));
+  log("isFacebook", /FBAN|FBAV/i.test(navigator.userAgent));
+
+  // Screen
+  log("Screen", `${screen.width}x${screen.height}`);
+  log("Pixel Ratio", window.devicePixelRatio);
+
+  // Visibility
+  log("Visibility State", document.visibilityState);
+</script>
 
 </body>
 </html>
