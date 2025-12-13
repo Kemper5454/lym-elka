@@ -1,78 +1,69 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AR Debug</title>
-
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      color: #0f0;
-      font-family: monospace;
-      padding: 16px;
-      font-size: 13px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    h1 {
-      color: #0ff;
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-
-    .block {
-      margin-bottom: 16px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 8px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR Debug Telegram</title>
+<style>
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: monospace;
+  background: black;
+  color: #0f0;
+  white-space: pre-wrap;
+}
+h1 {
+  color: #0ff;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+</style>
 </head>
 <body>
 
 <h1>AR DEBUG INFO</h1>
-
 <div id="info"></div>
 
 <script>
-  const info = document.getElementById("info");
+const info = document.getElementById("info");
 
-  function log(title, data) {
-    info.innerHTML += `\n=== ${title} ===\n`;
-    info.innerHTML += data + "\n";
-  }
+function log(title, data) {
+  info.innerHTML += `\n=== ${title} ===\n${data}\n`;
+}
 
-  log("User Agent", navigator.userAgent);
-  log("Platform", navigator.platform);
-  log("Vendor", navigator.vendor);
-  log("Language", navigator.language);
-  log("Languages", JSON.stringify(navigator.languages));
-  log("Hardware Concurrency", navigator.hardwareConcurrency);
-  log("Device Memory", navigator.deviceMemory);
-  log("Secure Context", window.isSecureContext);
-  log("Location", location.href);
+// Основные данные
+log("User Agent", navigator.userAgent);
+log("Platform", navigator.platform);
+log("Vendor", navigator.vendor);
+log("Language", navigator.language);
+log("Languages", JSON.stringify(navigator.languages));
+log("Hardware Concurrency", navigator.hardwareConcurrency);
+log("Device Memory", navigator.deviceMemory);
+log("Secure Context", window.isSecureContext);
+log("Location", location.href);
+log("Touch Support", 'ontouchstart' in window);
+log("Max Touch Points", navigator.maxTouchPoints);
+log("WebXR Support", 'xr' in navigator);
+log("MediaDevices", !!navigator.mediaDevices);
+log("Screen", `${screen.width}x${screen.height}`);
+log("Pixel Ratio", window.devicePixelRatio);
+log("Visibility State", document.visibilityState);
 
-  log("Touch Support", 'ontouchstart' in window);
-  log("Max Touch Points", navigator.maxTouchPoints);
+// Платформа
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isAndroid = /Android/i.test(navigator.userAgent);
 
-  log("WebXR Support", 'xr' in navigator);
-  log("MediaDevices", !!navigator.mediaDevices);
+// Telegram WebView detection
+const isTelegramAndroid = isAndroid && typeof window.TelegramWebview !== 'undefined';
+const isTelegramIOS = isIOS && typeof window.TelegramWebviewProxy !== 'undefined' && typeof window.TelegramWebviewProxyProto !== 'undefined';
+const isTelegram = isTelegramAndroid || isTelegramIOS;
 
-  // Простые детекторы
-  log("isIOS", /iPhone|iPad|iPod/i.test(navigator.userAgent));
-  log("isAndroid", /Android/i.test(navigator.userAgent));
-  log("isTelegram", /Telegram|TG/i.test(navigator.userAgent));
-  log("isInstagram", /Instagram/i.test(navigator.userAgent));
-  log("isFacebook", /FBAN|FBAV/i.test(navigator.userAgent));
-
-  // Screen
-  log("Screen", `${screen.width}x${screen.height}`);
-  log("Pixel Ratio", window.devicePixelRatio);
-
-  // Visibility
-  log("Visibility State", document.visibilityState);
+log("isIOS", isIOS);
+log("isAndroid", isAndroid);
+log("isTelegramAndroid", isTelegramAndroid);
+log("isTelegramIOS", isTelegramIOS);
+log("isTelegramWebView", isTelegram ? "Yes" : "No");
 </script>
 
 </body>
