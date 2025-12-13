@@ -12,6 +12,8 @@
       margin: 0;
       background: black;
       overflow: hidden;
+      font-family: sans-serif;
+      color: white;
     }
 
     model-viewer {
@@ -20,6 +22,18 @@
       opacity: 0;
       position: absolute;
       pointer-events: none;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      font-size: 20px;
+      background: black;
     }
   </style>
 </head>
@@ -39,32 +53,42 @@
     ar-modes="scene-viewer webxr"
   ></model-viewer>
 
+  <div id="overlay" class="overlay" style="display:none;">
+    Откройте в другом браузере
+  </div>
+
   <script>
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isAndroid = /Android/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+
+    // Telegram WebView detection
+    const isTelegramAndroid = isAndroid && typeof window.TelegramWebview !== 'undefined';
+    const isTelegramIOS = isIOS && typeof window.TelegramWebviewProxy !== 'undefined' && typeof window.TelegramWebviewProxyProto !== 'undefined';
+    const isTelegram = isTelegramAndroid || isTelegramIOS;
+
+    const overlay = document.getElementById("overlay");
+    const modelViewer = document.getElementById("androidAR");
 
     window.addEventListener("load", () => {
-      if (isIOS) {
-        const link = document.createElement("a");
-        link.href = "lymtree.usdz";
-        link.rel = "ar";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } 
-      else if (isAndroid) {
-        document.getElementById("androidAR").activateAR();
-      } 
-      else {
-        document.body.innerHTML = `
-          <div style="
-            color:white;
-            font-family:sans-serif;
-            text-align:center;
-            padding:40px">
-            Откройте страницу на мобильном устройстве
-          </div>
-        `;
+      if (isTelegram) {
+        // Telegram WebView → показываем сообщение
+        overlay.style.display = "flex";
+      } else {
+        // Обычные браузеры → AR
+        if (isIOS) {
+          const link = document.createElement("a");
+          link.href = "lymtree.usdz";
+          link.rel = "ar";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } else if (isAndroid) {
+          modelViewer.activateAR();
+        } else {
+          overlay.style.display = "flex";
+          overlay.innerText = "Откройте страницу на мобильном устройстве";
+        }
       }
     });
   </script>
