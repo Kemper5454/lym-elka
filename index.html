@@ -11,7 +11,19 @@
     body {
       margin: 0;
       background: black;
-      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    .message {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 24px;
+      font-size: 20px;
     }
 
     model-viewer {
@@ -25,6 +37,12 @@
 </head>
 <body>
 
+  <div id="message" class="message" style="display:none;">
+    Пожалуйста, откройте страницу<br>
+    <strong>в Safari или Chrome</strong>
+  </div>
+
+  <!-- Только для Android -->
   <model-viewer
     id="androidAR"
     src="lymtree.glb"
@@ -40,33 +58,35 @@
   ></model-viewer>
 
   <script>
+    const isTelegram = /Telegram|TG/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const isAndroid = /Android/i.test(navigator.userAgent);
 
-    window.addEventListener("load", () => {
-      if (isIOS) {
-        const link = document.createElement("a");
-        link.href = "lymtree.usdz";
-        link.rel = "ar";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } 
-      else if (isAndroid) {
-        document.getElementById("androidAR").activateAR();
-      } 
-      else {
-        document.body.innerHTML = `
-          <div style="
-            color:white;
-            font-family:sans-serif;
-            text-align:center;
-            padding:40px">
-            Откройте страницу на мобильном устройстве
-          </div>
-        `;
-      }
-    });
+    const message = document.getElementById("message");
+
+    if (isTelegram) {
+      // ❌ Telegram WebView — показываем предупреждение
+      message.style.display = "flex";
+    } else {
+      // ✅ Нормальный браузер — запускаем AR
+      window.addEventListener("load", () => {
+        if (isIOS) {
+          const link = document.createElement("a");
+          link.href = "lymtree.usdz";
+          link.rel = "ar";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } 
+        else if (isAndroid) {
+          document.getElementById("androidAR").activateAR();
+        } 
+        else {
+          message.innerHTML = "Откройте страницу на мобильном устройстве";
+          message.style.display = "flex";
+        }
+      });
+    }
   </script>
 
 </body>
