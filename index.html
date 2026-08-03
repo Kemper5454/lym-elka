@@ -17,11 +17,31 @@
     }
 
     model-viewer {
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      position: absolute;
-      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: black;
+      --poster-color: black;
+    }
+
+    .ar-button {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      padding: 14px 32px;
+      font-size: 18px;
+      font-family: inherit;
+      color: black;
+      background: white;
+      border: none;
+      border-radius: 32px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .ar-button:active {
+      transform: translateX(-50%) scale(0.97);
     }
 
     .overlay {
@@ -53,6 +73,8 @@
     ar-modes="scene-viewer webxr"
   ></model-viewer>
 
+  <button id="arButton" class="ar-button">Открыть в AR</button>
+
   <div id="overlay" class="overlay" style="display:none;">
     Откройте в другом браузере
   </div>
@@ -69,8 +91,9 @@
 
     const overlay = document.getElementById("overlay");
     const modelViewer = document.getElementById("androidAR");
+    const arButton = document.getElementById("arButton");
 
-    window.addEventListener("load", () => {
+    arButton.addEventListener("click", () => {
       if (isTelegram) {
         // Telegram WebView → показываем сообщение
         overlay.style.display = "flex";
@@ -90,6 +113,11 @@
           overlay.innerText = "Откройте страницу на мобильном устройстве";
         }
       }
+    });
+
+    // Тап по сообщению закрывает его и возвращает к 3D-просмотру
+    overlay.addEventListener("click", () => {
+      overlay.style.display = "none";
     });
   </script>
 
